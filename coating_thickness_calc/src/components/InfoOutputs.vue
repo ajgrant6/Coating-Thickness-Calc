@@ -12,8 +12,8 @@
     <div class="output_title">
       <p>Diameter Ratio:</p>
     </div>
-    <p>{{ calcDiameterRatio }}</p>
-    <p>%</p>
+    <p>{{ calcDiameterRatio }}%</p>
+    <p :class="ratioStatusClass">{{ ratioStatus }}</p> <!-- Add status label -->
   </div>
 </template>
 
@@ -51,8 +51,34 @@ const calcDiameterRatio = computed(() => {
     return '0'; // If inner diameter is less than or equal to 0, return 0
   }
 
-  const diameter_ratio = inner_d / outer_d;
-  return (diameter_ratio*100).toFixed(0); // Returns the result rounded to 2 decimal places
+  const diameter_ratio = (inner_d / outer_d) * 100; // Get ratio as a percentage
+  return diameter_ratio.toFixed(2); // Returns the result rounded to 2 decimal places
+});
+
+// Computed property to determine the status of the ratio
+const ratioStatus = computed(() => {
+  const ratio = parseFloat(calcDiameterRatio.value);
+
+  if (ratio >= 40 && ratio <= 60) {
+    return 'Good';
+  } else if (ratio >= 30 && ratio <= 70) {
+    return 'OK';
+  } else {
+    return 'Bad';
+  }
+});
+
+// Add a class for visual indication based on the ratio status
+const ratioStatusClass = computed(() => {
+  const ratio = ratioStatus.value;
+  
+  if (ratio === 'Good') {
+    return 'status-good';
+  } else if (ratio === 'OK') {
+    return 'status-ok';
+  } else {
+    return 'status-bad';
+  }
 });
 </script>
 
@@ -70,5 +96,21 @@ const calcDiameterRatio = computed(() => {
 
 .output_field p {
   margin-left: 10px;
+}
+
+/* Styles to signal the ratio status */
+.status-good {
+  color: green;
+  font-weight: bold;
+}
+
+.status-ok {
+  color: orange;
+  font-weight: bold;
+}
+
+.status-bad {
+  color: red;
+  font-weight: bold;
 }
 </style>
